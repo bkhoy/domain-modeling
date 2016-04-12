@@ -8,7 +8,18 @@
 
 import Foundation
 
+print("Hello, World!")
 
+public func testMe() -> String {
+    return "I have been tested"
+}
+
+public class TestMe {
+    public func Please() -> String {
+        return "I have been tested"
+    }
+    
+}
 
 ////////////////////////////////////
 // Money
@@ -27,7 +38,7 @@ public struct Money {
         return self
     }
     let conversion = ["USD": 1, "EUR": 1.5, "CAN": 1.25, "GBP": 0.5]
-    let scale = conversion[self.currency]! / conversion[to]!
+    let scale = conversion[to]! / conversion[self.currency]!
     return Money(amount: Int(Double(self.amount) * scale), currency: to)
   }
 
@@ -57,112 +68,108 @@ public class Job {
  
     public var title : String
     public var type : JobType
-   
-   public enum JobType {
-    case Hourly(Double)
-    case Salary(Int)
-  }
-
+    
+    public enum JobType {
+        case Hourly(Double)
+        case Salary(Int)
+    }
 
     public init(title : String, type : JobType) {
         self.title = title
         self.type = type
-  }
+    }
 
-  public func calculateIncome(hours: Int) -> Int {
-    switch self.type {
-    case .Hourly(let rate):
-        return (Int(rate * Double(hours)))
-    case .Salary(let value):
-        return value
+    public func calculateIncome(hours: Int) -> Int {
+        switch self.type {
+        case .Hourly(let rate):
+            return (Int(rate * Double(hours)))
+        case .Salary(let value):
+            return value
+        }
     }
-  }
- /*
-    //passed in a percentage
-    //expected to add the percentage of salary to total salary
-  public func raise(amt : Double) {
-    
-    switch self.type {
-    case .Hourly(let rate):
-        let addMoney = rate + amt
-    case .Salary(let value):
-        let addMoney = Int(Double(value) * amt)
+
+    public func raise(amt : Double) {
+        switch self.type {
+        case .Hourly(let rate):
+            self.type = .Hourly(rate + amt)
+        case .Salary(let value):
+            self.type = .Salary(Int(Double(value) * amt))
+        }
+        
     }
-  }
 }
-    
-    */
 
 ////////////////////////////////////
 // Person
 //
 public class Person {
-  public var firstName : String = ""
-  public var lastName : String = ""
-  public var age : Int = 0
+    public var firstName : String = ""
+    public var lastName : String = ""
+    public var age : Int = 0
 
-  public var job : Job? {
-    get { return self.job }
-    set(value) {
-        if self.age < 16 { self.job = nil }
-        else { self.job = value }
+    public var job : Job? {
+        get { return self.job }
+        set(value) {
+            if self.age < 16 { self.job = nil }
+            else { self.job = value }
+        }
     }
-  }
     
 
   //matt.spouse = Person(firstName: "Bambi", lastName: "Jones", age: 42)
-  public var spouse : Person? {
-    get { return self.spouse }
-    set(value) {
-        if self.age < 18 { self.spouse = nil }
-        else { self.spouse = value }
+    public var spouse : Person? {
+        get { return self.spouse }
+        set(value) {
+            if self.age < 18 { self.spouse = nil }
+            else { self.spouse = value }
+        }
     }
-  }
     
-  public init(firstName : String, lastName: String, age : Int) {
-    self.firstName = firstName
-    self.lastName = lastName
-    self.age = age
-  }
+    public init(firstName : String, lastName: String, age : Int) {
+        self.firstName = firstName
+        self.lastName = lastName
+        self.age = age
+    }
     
     //[Person: firstName:Ted lastName:Neward age:45 job:nil spouse:nil]
-  public func toString() -> String {
-    return("[Person: firstName:\(firstName) lastName:\(lastName) age:\(age) job:\(job) spouse:\(spouse)]")
-  }
+    public func toString() -> String {
+        return("[Person: firstName:\(firstName) lastName:\(lastName) age:\(age) job:\(job) spouse:\(spouse)]")
+    }
     
 }
-/*
+
 ////////////////////////////////////
 // Family
 //
 public class Family {
-  private var members : [Person] = []
+    private var members : [Person] = []
   
-  public init(spouse1: Person, spouse2: Person) {
-  }
+    public init(spouse1: Person, spouse2: Person) {
+        if spouse1.spouse == nil && spouse2.spouse == nil {
+            spouse1.spouse = spouse2
+            spouse2.spouse = spouse1
+            members.append(spouse1)
+            members.append(spouse2)
+        }
+    }
   
-  public func haveChild(child: Person) -> Bool {
-  }
+    public func haveChild(child: Person) -> Bool {
+        if members[0].age > 21 || members[1].age > 21 {
+            child.age = 0
+            members.append(child)
+        }
+        return true
+    }
   
-  public func householdIncome() -> Int {
-  }
-
-
-*/
-}
-print("Hello, World!")
-let testMoney = Money(amount: 2, currency: "USD")
-print(testMoney.convert("EUR"))
-
-public func testMe() -> String {
-  return "I have been tested"
-}
-
-public class TestMe {
-  public func Please() -> String {
-    return "I have been tested"
-  }
-
+    public func householdIncome() -> Int {
+        var total = 0;
+        for member in members {
+            if member.job != nil {
+                total += 1
+            }
+        }
+        return total
+    }
 }
 
 
