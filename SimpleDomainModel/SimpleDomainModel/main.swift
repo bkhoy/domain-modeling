@@ -82,7 +82,7 @@ public class Job {
     public func calculateIncome(hours: Int) -> Int {
         switch self.type {
         case .Hourly(let rate):
-            return (Int(rate * Double(hours)))
+            return Int(rate * Double(hours))
         case .Salary(let value):
             return value
         }
@@ -165,7 +165,7 @@ public class Family {
         var total = 0;
         for member in members {
             if member.job != nil {
-                total += 1
+                total += member.job!.calculateIncome(2000)
             }
         }
         return total
