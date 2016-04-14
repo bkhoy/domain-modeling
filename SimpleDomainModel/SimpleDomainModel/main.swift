@@ -46,8 +46,8 @@ public struct Money {
     if self.currency == to.currency {
         return Money(amount: self.amount + to.amount, currency: self.currency)
     } else {
-        let newMoney = self.convert(self.currency)
-        return Money(amount: self.amount + newMoney.amount, currency: self.currency)
+        let newMoney = self.convert(to.currency)
+        return Money(amount: to.amount + newMoney.amount, currency: to.currency)
     }
   }
     
@@ -55,8 +55,8 @@ public struct Money {
     if self.currency == from.currency {
         return Money(amount: self.amount - from.amount, currency: self.currency)
     } else {
-        let newMoney = self.convert(self.currency)
-        return Money(amount: self.amount - newMoney.amount, currency: self.currency)
+        let newMoney = self.convert(from.currency)
+        return Money(amount: newMoney.amount - from.amount, currency: self.currency)
     }
   }
 }
@@ -91,9 +91,9 @@ public class Job {
     public func raise(amt : Double) {
         switch self.type {
         case .Hourly(let rate):
-            self.type = .Hourly(rate + amt)
+            self.type = .Hourly(Double(rate + amt))
         case .Salary(let value):
-            self.type = .Salary(Int(Double(value) * amt))
+            self.type = .Salary(value + Int(amt))
         }
         
     }
@@ -106,22 +106,33 @@ public class Person {
     public var firstName : String = ""
     public var lastName : String = ""
     public var age : Int = 0
+    public var job2 : Job?
+    public var spouse2 : Person?
+
 
     public var job : Job? {
-        get { return self.job }
+        get {
+            if self.age < 16 {
+                return nil
+            } else {
+                return job2
+            }
+        }
         set(value) {
-            if self.age < 16 { self.job = nil }
-            else { self.job = value }
+            job2 = value
         }
     }
     
-
-  //matt.spouse = Person(firstName: "Bambi", lastName: "Jones", age: 42)
     public var spouse : Person? {
-        get { return self.spouse }
+        get {
+            if self.age > 18 {
+                return nil
+            } else {
+                return spouse2
+            }
+        }
         set(value) {
-            if self.age < 18 { self.spouse = nil }
-            else { self.spouse = value }
+            spouse2 = value
         }
     }
     
@@ -129,11 +140,12 @@ public class Person {
         self.firstName = firstName
         self.lastName = lastName
         self.age = age
+        job2 = nil
+        spouse2 = nil
     }
     
-    //[Person: firstName:Ted lastName:Neward age:45 job:nil spouse:nil]
     public func toString() -> String {
-        return("[Person: firstName:\(firstName) lastName:\(lastName) age:\(age) job:\(job) spouse:\(spouse)]")
+        return("[Person: firstName:\(firstName) lastName:\(lastName) age:\(age) job:\(job2) spouse:\(spouse2)]")
     }
     
 }
@@ -156,16 +168,18 @@ public class Family {
     public func haveChild(child: Person) -> Bool {
         if members[0].age > 21 || members[1].age > 21 {
             child.age = 0
-            members.append(child)
+            members += [child]
+            return true
+        } else {
+            return false
         }
-        return true
     }
   
     public func householdIncome() -> Int {
         var total = 0;
         for member in members {
             if member.job != nil {
-                total += member.job!.calculateIncome(2000)
+                total += (member.job?.calculateIncome(2000))!
             }
         }
         return total
