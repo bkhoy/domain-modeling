@@ -125,7 +125,7 @@ public class Person {
     
     public var spouse : Person? {
         get {
-            if self.age > 18 {
+            if self.age < 18 {
                 return nil
             } else {
                 return spouse2
@@ -166,13 +166,16 @@ public class Family {
     }
   
     public func haveChild(child: Person) -> Bool {
-        if members[0].age > 21 || members[1].age > 21 {
-            child.age = 0
-            members += [child]
-            return true
-        } else {
-            return false
+        var ofAge = false;
+        for member in members {
+            if member.age > 21 {
+                ofAge = true;
+            }
         }
+        if ofAge {
+            members.append(child)
+        }
+        return ofAge;
     }
   
     public func householdIncome() -> Int {
